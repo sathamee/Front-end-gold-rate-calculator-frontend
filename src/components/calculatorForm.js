@@ -30,21 +30,23 @@ const CalculatorForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch('/gold')
-      .then(response => response.json())
-      .then(data => {
-        const goldRate = data.find(rate => rate.karat === karat);
-        if (goldRate) {
-          const rate = goldRate.price;
-          const value = (rate * weight).toFixed(2);
-          setTotal(value);
-          setPrice(rate);
-        } else {
-          const value = (price * weight).toFixed(2);
-          setTotal(value);
-        }
-      })
-      .catch(error => console.error(error));
+    const goldRate = {
+      '9k': 1450,
+      '14k': 2600,
+      '18k': 3450,
+      '20k': 4500,
+      '22k': 5500,
+      '24k': 6250
+    };
+    if (goldRate[karat]) {
+      const rate = goldRate[karat];
+      const value = (parseFloat(rate) * parseFloat(weight)).toFixed(2);
+      setTotal(value);
+      setPrice(rate.toString());
+    } else {
+      const value = (parseFloat(price) * parseFloat(weight)).toFixed(2);
+      setTotal(value);
+    }
   };
 
   return (
@@ -83,16 +85,19 @@ const CalculatorForm = () => {
           placeholder="Enter price per gram"
         />
       </Form.Group>
-      <Button variant="primary" type="submit">
-        Calculate
-      </Button>
-      {total && (
-        <h4 className="mt-4">
-          Total Value: <span className="text-success"> ₹ {total}  </span>
-        </h4>
-      )}
+      <Button variant="primary" type="submit">Calculate</Button>
+      <Form.Group controlId="total">
+        <Form.Label>Total</Form.Label>
+        <Form.Control
+          type="text"
+          value={`₹ ${total}`} // Add the Indian Rupee symbol before the total value
+          placeholder="0.00"
+          readOnly
+        />
+      </Form.Group>
     </Form>
   );
+  
 };
 
 export default CalculatorForm;
